@@ -1,1 +1,584 @@
-kjhkjl,nlk
+Controladores:
+    BlogController.php
+    CommentController.php
+    PageController.php
+
+Data fixtures:
+    BlogFixtures.php
+    CommentFixtures.php
+    LoadUserData.php
+
+Entidades:
+    Repository:
+        BlogRepository.php
+        CommentRepository.php
+    Blog.php
+    Comment.php
+    Enquiry.php
+    Registro.php
+    User.php
+
+Form:
+    BlogType.php
+    CommentType.php
+    EnquiryType.php
+    RegistroType.php
+    UserType.php
+
+O resto é simpes de perceber.
+
+Erros
+
+Date_default_timezone_get()
+
+Resolução:
+
+Abir app.kernel e adicionar:
+
+public function init() {
+    date_default_timezone_set( 'Europe/Lisbon' );
+    parent::init();
+    }
+
+Write cache
+
+Resolução:
+
+Usar o comando em app/cache:  sudo rm -rf dev
+
+Ou mais complicado mas definitivo:
+
+$ rm -rf app/cache/*
+$ rm -rf app/logs/*
+$ HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+$ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs
+$ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs
+
+Inicio do blog:
+
+Criar bundle
+
+php app/console generate:bundle --namespace=Blogger/BlogBundle –format=yml
+
+
+Inicio teste
+
+Registar bundle: 
+
+// app/AppKernel.php
+class AppKernel extends Kernel
+{
+    public function registerBundles()
+    {
+        $bundles = array(
+        // ..
+            new Blogger\BlogBundle\BloggerBlogBundle(),
+        );
+        // ..
+
+        return $bundles;
+    }
+
+    // ..
+}
+
+Routear:
+
+# app/config/routing.yml
+BloggerBlogBundle:
+    resource: "@BloggerBlogBundle/Resources/config/routing.yml"
+    prefix:   /
+
+# src/Blogger/BlogBundle/Resources/config/routing.yml
+BloggerBlogBundle_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: BloggerBlogBundle:Default:index }
+
+Controlador Default:
+
+<?php
+// src/Blogger/BlogBundle/Controller/DefaultController.php
+
+namespace Blogger\BlogBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class DefaultController extends Controller
+{
+    public function indexAction($name)
+    {
+        return $this->render('BloggerBlogBundle:Default:index.html.twig', array('name' => $name));
+    }
+}
+
+Pode-se apagar depois de visualizar:
+
+src/Blogger/BlogBundle/Controller/DefaultController.php  src/Blogger/BlogBundle/Resources/views/Default/ src/Blogger/BlogBundle/Resources/config/routing.yml
+
+Inicio verdadeiro projecto
+
+<!-- app/Resources/views/base.html.twig -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html"; charset=utf-8" />
+        <title>{% block title %}symblog{% endblock %} - symblog</title>
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        {% block stylesheets %}
+            <link href='http://fonts.googleapis.com/css?family=Irish+Grover' rel='stylesheet' type='text/css'>
+            <link href='http://fonts.googleapis.com/css?family=La+Belle+Aurore' rel='stylesheet' type='text/css'>
+            <link href="{{ asset('css/screen.css') }}" type="text/css" rel="stylesheet" />
+        {% endblock %}
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+
+        <section id="wrapper">
+            <header id="header">
+                <div class="top">
+                    {% block navigation %}
+                        <nav>
+                            <ul class="navigation">
+                                <li><a href="#">Home</a></li>
+                                <li><a href="#">About</a></li>
+                                <li><a href="#">Contact</a></li>
+                            </ul>
+                        </nav>
+                    {% endblock %}
+                </div>
+
+                <hgroup>
+                    <h2>{% block blog_title %}<a href="#">symblog</a>{% endblock %}</h2>
+                    <h3>{% block blog_tagline %}<a href="#">creating a blog in Symfony2</a>{% endblock %}</h3>
+                </hgroup>
+            </header>
+
+            <section class="main-col">
+                {% block body %}{% endblock %}
+            </section>
+            <aside class="sidebar">
+                {% block sidebar %}{% endblock %}
+            </aside>
+
+            <div id="footer">
+                {% block footer %}
+                    Symblog -Criado por Daniel e Rui
+                {% endblock %}
+            </div>
+        </section>
+
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>
+web/css/screen.css
+
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+
+body { line-height: 1;font-family: Arial, Helvetica, sans-serif;font-size: 12px; width: 100%; height: 100%; color: #000; font-size: 14px; }
+.clear { clear: both; }
+
+#wrapper { margin: 10px auto; width: 1000px; }
+#wrapper a { text-decoration: none; color: #F48A00; }
+#wrapper span.highlight { color: #F48A00; }
+
+#header { border-bottom: 1px solid #ccc; margin-bottom: 20px; }
+#header .top { border-bottom: 1px solid #ccc; margin-bottom: 10px; }
+#header ul.navigation { list-style: none; text-align: right; }
+#header .navigation li { display: inline }
+#header .navigation li a { display: inline-block; padding: 10px 15px; border-left: 1px solid #ccc; }
+#header h2 { font-family: 'Irish Grover', cursive; font-size: 92px; text-align: center; line-height: 110px; }
+#header h2 a { color: #000; }
+#header h3 { text-align: center; font-family: 'La Belle Aurore', cursive; font-size: 24px; margin-bottom: 20px; font-weight: normal; }
+
+.main-col { width: 700px; display: inline-block; float: left; border-right: 1px solid #ccc; padding: 20px; margin-bottom: 20px; }
+.sidebar { width: 239px; padding: 10px; display: inline-block; }
+
+.main-col a { color: #F48A00; }
+.main-col h1,
+.main-col h2
+    { line-height: 1.2em; font-size: 32px; margin-bottom: 10px; font-weight: normal; color: #F48A00; }
+.main-col p { line-height: 1.5em; margin-bottom: 20px; }
+
+#footer { border-top: 1px solid #ccc; clear: both; text-align: center; padding: 10px; color: #aaa; }
+
+{# src/Blogger/BlogBundle/Resources/views/layout.html.twig #}
+{% extends '::base.html.twig' %}
+
+{% block sidebar %}
+    Sidebar content
+{% endblock %}
+
+<?php
+// src/Blogger/BlogBundle/Controller/PageController.php
+
+namespace Blogger\BlogBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class PageController extends Controller
+{
+    public function indexAction()
+    {
+        return $this->render('BloggerBlogBundle:Page:index.html.twig');
+    }
+}
+{# src/Blogger/BlogBundle/Resources/views/Page/index.html.twig #}
+{% extends 'BloggerBlogBundle::layout.html.twig' %}
+
+{% block body %}
+    Blog homepage
+{% endblock %}
+# src/Blogger/BlogBundle/Resources/config/routing.yml
+BloggerBlogBundle_homepage:
+    pattern:  /
+    defaults: { _controller: BloggerBlogBundle:Page:index }
+    requirements:
+        _method:  GET
+
+Agora visualizar a pagina: 
+
+http://symblog.dev/app_dev.php/
+
+Pagina about
+
+
+# src/Blogger/BlogBundle/Resources/config/routing.yml
+BloggerBlogBundle_about:
+    pattern:  /about
+    defaults: { _controller: BloggerBlogBundle:Page:about }
+    requirements:
+        _method:  GET
+// src/Blogger/BlogBundle/Controller/PageController.php
+class PageController extends Controller
+{
+    //  ..
+
+    public function aboutAction()
+    {
+        return $this->render('BloggerBlogBundle:Page:about.html.twig');
+    }
+}
+{# src/Blogger/BlogBundle/Resources/views/Page/about.html.twig #}
+{% extends 'BloggerBlogBundle::layout.html.twig' %}
+
+{% block title %}About{% endblock%}
+
+{% block body %}
+    <header>
+        <h1>About symblog</h1>
+    </header>
+    <article>
+        <p>Donec imperdiet ante sed diam consequat et dictum erat faucibus. Aliquam sit
+        amet vehicula leo. Morbi urna dui, tempor ac posuere et, rutrum at dui.
+        Curabitur neque quam, ultricies ut imperdiet id, ornare varius arcu. Ut congue
+        urna sit amet tellus malesuada nec elementum risus molestie. Donec gravida
+        tellus sed tortor adipiscing fringilla. Donec nulla mauris, mollis egestas
+        condimentum laoreet, lacinia vel lorem. Morbi vitae justo sit amet felis
+        vehicula commodo a placerat lacus. Mauris at est elit, nec vehicula urna. Duis a
+        lacus nisl. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+        posuere cubilia Curae.</p>
+    </article>
+{% endblock %}
+<!-- app/Resources/views/base.html.twig -->
+{% block navigation %}
+    <nav>
+        <ul class="navigation">
+            <li><a href="{{ path('BloggerBlogBundle_homepage') }}">Home</a></li>
+            <li><a href="{{ path('BloggerBlogBundle_about') }}">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+{% endblock %}
+<!-- app/Resources/views/base.html.twig -->
+{% block navigation %}
+    <nav>
+        <ul class="navigation">
+            <li><a href="{{ path('BloggerBlogBundle_homepage') }}">Home</a></li>
+            <li><a href="{{ path('BloggerBlogBundle_about') }}">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+{% endblock %}
+
+Pagina contacto
+
+# src/Blogger/BlogBundle/Resources/config/routing.yml
+BloggerBlogBundle_contact:
+    pattern:  /contact
+    defaults: { _controller: BloggerBlogBundle:Page:contact }
+    requirements:
+        _method:  GET
+// src/Blogger/BlogBundle/Controller/PageController.php
+// ..
+public function contactAction()
+{
+    return $this->render('BloggerBlogBundle:Page:contact.html.twig');
+}
+// ..
+{# src/Blogger/BlogBundle/Resources/views/Page/contact.html.twig #}
+{% extends 'BloggerBlogBundle::layout.html.twig' %}
+
+{% block title %}Contact{% endblock%}
+
+{% block body %}
+    <header>
+        <h1>Contact symblog</h1>
+    </header>
+
+    <p>Want to contact symblog?</p>
+{% endblock %}
+<!-- app/Resources/views/base.html.twig -->
+{% block navigation %}
+    <nav>
+        <ul class="navigation">
+            <li><a href="{{ path('BloggerBlogBundle_homepage') }}">Home</a></li>
+            <li><a href="{{ path('BloggerBlogBundle_about') }}">About</a></li>
+            <li><a href="{{ path('BloggerBlogBundle_contact') }}">Contact</a></li>
+        </ul>
+    </nav>
+{% endblock %}
+<?php
+// src/Blogger/BlogBundle/Entity/Enquiry.php
+
+namespace Blogger\BlogBundle\Entity;
+
+class Enquiry
+{
+    protected $name;
+
+    protected $email;
+
+    protected $subject;
+
+    protected $body;
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+    }
+
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    public function setBody($body)
+    {
+        $this->body = $body;
+    }
+}
+<?php
+// src/Blogger/BlogBundle/Form/EnquiryType.php
+
+namespace Blogger\BlogBundle\Form;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+
+class EnquiryType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder->add('name');
+        $builder->add('email', 'email');
+        $builder->add('subject');
+        $builder->add('body', 'textarea');
+    }
+
+    public function getName()
+    {
+        return 'contact';
+    }
+}
+// src/Blogger/BlogBundle/Controller/PageController.php
+public function contactAction()
+{
+    $enquiry = new Enquiry();
+    $form = $this->createForm(new EnquiryType(), $enquiry);
+
+    $request = $this->getRequest();
+    if ($request->getMethod() == 'POST') {
+        $form->bindRequest($request);
+
+        if ($form->isValid()) {
+            // Perform some action, such as sending an email
+
+            // Redirect - This is important to prevent users re-posting
+            // the form if they refresh the page
+            return $this->redirect($this->generateUrl('BloggerBlogBundle_contact'));
+        }
+    }
+
+    return $this->render('BloggerBlogBundle:Page:contact.html.twig', array(
+        'form' => $form->createView()
+    ));
+}
+<?php
+// src/Blogger/BlogBundle/Controller/PageController.php
+
+namespace Blogger\BlogBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+// Import new namespaces
+use Blogger\BlogBundle\Entity\Enquiry;
+use Blogger\BlogBundle\Form\EnquiryType;
+
+class PageController extends Controller
+// ..
+{# src/Blogger/BlogBundle/Resources/views/Page/contact.html.twig #}
+{% extends 'BloggerBlogBundle::layout.html.twig' %}
+
+{% block title %}Contact{% endblock%}
+
+{% block body %}
+    <header>
+        <h1>Contact symblog</h1>
+    </header>
+
+    <p>Want to contact symblog?</p>
+
+    <form action="{{ path('BloggerBlogBundle_contact') }}" method="post" {{ form_enctype(form) }} class="blogger">
+        {{ form_errors(form) }}
+
+        {{ form_row(form.name) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.subject) }}
+        {{ form_row(form.body) }}
+
+        {{ form_rest(form) }}
+
+        <input type="submit" value="Submit" />
+    </form>
+{% endblock %}
+src/Blogger/BlogBundle/Resources/public/css/blog.css
+
+.blogger-notice { text-align: center; padding: 10px; background: #DFF2BF; border: 1px solid; color: #4F8A10; margin-bottom: 10px; }
+form.blogger { font-size: 16px; }
+form.blogger div { clear: left; margin-bottom: 10px; }
+form.blogger label { float: left; margin-right: 10px; text-align: right; width: 100px; font-weight: bold; vertical-align: top; padding-top: 10px; }
+form.blogger input[type="text"],
+form.blogger input[type="email"]
+    { width: 500px; line-height: 26px; font-size: 20px; min-height: 26px; }
+form.blogger textarea { width: 500px; height: 150px; line-height: 26px; font-size: 20px; }
+form.blogger input[type="submit"] { margin-left: 110px; width: 508px; line-height: 26px; font-size: 20px; min-height: 26px; }
+form.blogger ul li { color: #ff0000; margin-bottom: 5px; }
+{# src/Blogger/BlogBundle/Resources/views/layout.html.twig #}
+{% extends '::base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('bundles/bloggerblog/css/blog.css') }}" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+{% block sidebar %}
+    Sidebar content
+{% endblock %}
+correr este comando: php app/console assets:install web --symlink
+
+agora vou fazer o submit:
+
+# src/Blogger/BlogBundle/Resources/config/routing.yml
+BloggerBlogBundle_contact:
+    pattern:  /contact
+    defaults: { _controller: BloggerBlogBundle:Page:contact }
+    requirements:
+        _method:  GET|POST
+
+<?php
+// src/Blogger/BlogBundle/Entity/Enquiry.php
+
+namespace Blogger\BlogBundle\Entity;
+
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Enquiry
+{
+    // ..
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('name', new NotBlank());
+
+        $metadata->addPropertyConstraint('email', new Email());
+
+        $metadata->addPropertyConstraint('subject', new NotBlank());
+        $metadata->addPropertyConstraint('subject', new Assert\Length(array(
+            'min'        => 2,
+            'max'        => 50,
+            'minMessage' => 'Your first name must be at least {{ limit }} characters length',
+            'maxMessage' => 'Your first name cannot be longer than {{ limit }} characters length',
+        )));
+
+        $metadata->addPropertyConstraint('body', new Assert\Length(array(
+            'min'        => 2,
+            'max'        => 50,
+            'minMessage' => 'Your first name must be at least {{ limit }} characters length',
+            'maxMessage' => 'Your first name cannot be longer than {{ limit }} characters length',
+        )));
+    }
+
+    // ..
+
+}
+Podiamos utilizar o MinLength e MaxLength mas no symfony que voces usam esta deprecated
+
+Receber email
+
+app/config/parameters.yml
+
+mailer_transport: gmail
+mailer_encryption: ssl
+mailer_auth_mode: login
+mailer_host: smtp.gmail.com
+mailer_user: your_username
+mailer_password: your_password
+
+Erro no desenvolvimento:
+
+http://adabi.kelatekito.my/symfony2-error-debugging/
+
+
+The “hasFlash” method is deprecated since version 2.1 and removed in 2.3. The book has a good section on how to handle flash messages in different versions. To summarize, if you have this:
+1
+2
+3
+{% if app.session.hasFlash('success') %}
+  {{ app.session.flash('success') }}
+{% endif %}
+You need to change that construct into this:
+1
+2
+3
+{% for flashMessage in app.session.flashbag.get('success') %}
+  {{ flashMessage }}
+{% endfor %}
