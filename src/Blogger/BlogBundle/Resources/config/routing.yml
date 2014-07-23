@@ -1,0 +1,77 @@
+#http://software-talk.org/blog/2012/10/symfony2-tutorial-doctrine-entities-sql/
+
+BloggerBlogBundle_homepage:
+    pattern:  /
+    defaults: { _controller: BloggerBlogBundle:Page:index }
+    requirements:
+        _method:  GET
+    
+BloggerBlogBundle_about:
+    pattern:  /about
+    defaults: { _controller: BloggerBlogBundle:Page:about }
+    requirements:
+        _method:  GET
+        
+BloggerBlogBundle_contact:
+    pattern:  /contact
+    defaults: { _controller: BloggerBlogBundle:Page:contact }
+    requirements:
+        _method:  GET|POST
+        
+BloggerBlogBundle_blog_show:
+    pattern:  /{id}/{slug}
+    defaults: { _controller: BloggerBlogBundle:Blog:show }
+    requirements:
+        _method:  GET
+        id: \d+
+ 
+BloggerBlogBundle_comment_create:
+    pattern:  /comment/{blog_id}
+    defaults: { _controller: BloggerBlogBundle:Comment:create }
+    requirements:
+        _method:  POST
+        blog_id: \d+
+        
+BloggerBlogBundle_nacional:
+    pattern:  /nacional
+    defaults: { _controller: BloggerBlogBundle:Page:nacional }
+    requirements:
+        _method:  GET
+        
+BloggerBlogBundle_internacional:
+    pattern:  /internacional
+    defaults: { _controller: BloggerBlogBundle:Page:internacional }
+    requirements:
+        _method:  GET
+        
+BloggerBlogBundle_economia:
+    pattern:  /economia
+    defaults: { _controller: BloggerBlogBundle:Page:economia }
+    requirements:
+        _method:  GET
+        
+BloggerBlogBundle_desporto:
+    pattern:  /desporto
+    defaults: { _controller: BloggerBlogBundle:Page:desporto }
+    requirements:
+        _method:  GET
+        
+BloggerBlogBundle_adicionar:
+    pattern:  /adicionar
+    defaults: { _controller: BloggerBlogBundle:Page:adicionar }
+    requirements:
+        _method:  GET|POST
+        
+BloggerBlogBundle_conta:
+    path:     /registrar
+    defaults: { _controller: BloggerBlogBundle:Page:registrar }
+    requirements:
+        _method:  GET|POST
+    
+BloggerBlogBundle_erro:
+    path:     /registrar/erroCriarConta
+    defaults: { _controller: BloggerBlogBundle:Page:criar }
+    
+BloggerBlogBundle_login:
+    path:     /login
+    defaults: { _controller: BloggerBlogBundle:Page:login }

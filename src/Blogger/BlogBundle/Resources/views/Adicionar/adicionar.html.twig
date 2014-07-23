@@ -1,0 +1,17 @@
+{% extends 'BloggerBlogBundle::layout.html.twig' %}
+
+{% block body %}
+<h1> Adicionar Noticía </h1>
+
+<form action="{{path("BloggerBlogBundle_adicionar")}}" method="post" class="blogger">
+    <li.form>
+        {{ form_widget(form)}}
+    </li.form>
+    <input type="submit">
+</form>
+
+
+{% endblock %}
+
+
+

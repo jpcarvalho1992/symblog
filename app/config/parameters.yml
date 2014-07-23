@@ -1,0 +1,17 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_driver: pdo_mysql
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: symblog
+    database_user: daniel
+    database_password: 12345
+    mailer_transport: gmail
+    mailer_host: smtp.gmail.com
+    mailer_user: your_username
+    mailer_password: your_password
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
+    debug_toolbar: true
+    debug_redirects: false
+    use_assetic_controller: true
